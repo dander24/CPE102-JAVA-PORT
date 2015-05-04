@@ -10,6 +10,10 @@ public class Miner extends Actor
         animationRate = AnimationRate;
     }
 
+    public void setResourceCount(int i){
+        resourceCount = i;
+    }
+
     public int getResourceCount()
     {
         return resourceCount;

@@ -1,8 +1,10 @@
 import javafx.util.Pair;
 
 import java.lang.reflect.Type;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class WorldModel
 {
@@ -186,6 +188,176 @@ public class WorldModel
     }
 
     //end code ported from actions
+
+    public Point nextPosition(Point EntityPt, Point DestinationPt)
+    {
+        int horiz = sign(DestinationPt.getX() - EntityPt.getX());
+        Point newPt = new Point(EntityPt.getX()+horiz, EntityPt.getY());
+
+        if (horiz == 0 | isOccupied(newPt))
+        {
+            int vert = sign(DestinationPt.getY() - EntityPt.getY());
+            newPt = new Point(EntityPt.getX(), EntityPt.getY() + vert);
+
+            if (vert == 0 | isOccupied(newPt))
+            {
+                newPt = new Point (EntityPt.getX(), EntityPt.getY());
+            }
+
+        }
+        return newPt;
+    }
+
+    public Point blobNextPosition(Point EntityPt, Point DestinationPt)
+    {
+        int horiz = sign(DestinationPt.getX() - EntityPt.getX());
+        Point newPt = new Point(EntityPt.getX()+horiz, EntityPt.getY());
+
+        if (horiz == 0 | getTileOccupant(newPt).getClass() != Ore.class)
+        {
+            int vert = sign(DestinationPt.getY() - EntityPt.getY());
+            newPt = new Point(EntityPt.getX(), EntityPt.getY() + vert);
+
+            if (vert == 0 | getTileOccupant(newPt).getClass() != Ore.class)
+            {
+                newPt = new Point (EntityPt.getX(), EntityPt.getY());
+            }
+
+        }
+        return newPt;
+    }
+
+    public Pair<Point[], Boolean> minerToOre(Entity entity, Entity ore)
+{
+    Point entityPoint = ((Actor)entity).getPosition();
+    if (ore.getClass() != Ore.class)
+    {
+        return new Pair<>(new Point[]{entityPoint},false);
+    }
+    Point orePoint = ((Ore)entity).getPosition();
+
+    if (adjacent(entityPoint,orePoint))
+    {
+        ((Miner)entity).setResourceCount(1 + ((Miner) entity).getResourceCount());;
+        worldRemoveEntity(ore);
+        return new Pair<>(new Point[]{orePoint}, true);
+    }
+
+    else
+    {
+        Point newPt = nextPosition(entityPoint, orePoint);
+        return new Pair<>(moveEntity(entity,newPt),false);
+    }
+}
+    public Pair<Point[], Boolean> minerToSmith(Entity entity, Entity smith)
+    {
+        Point entityPoint = ((Actor)entity).getPosition();
+        if (smith.getClass() != Blacksmith.class)
+        {
+            return new Pair<>(new Point[]{entityPoint},false);
+        }
+        Point smithPoint = ((Blacksmith)entity).getPosition();
+
+        if (adjacent(entityPoint,smithPoint))
+        {
+            ((Blacksmith)entity).setResourceCount(((Miner) entity).getResourceCount() +
+                    ((Blacksmith) entity).getResourceCount());
+            ((Miner)entity).setResourceCount(0);
+            return new Pair<>(new Point[]{smithPoint}, true);
+        }
+
+        else
+        {
+            Point newPt = nextPosition(entityPoint, smithPoint);
+            return new Pair<>(moveEntity(entity,newPt),false);
+        }
+    }
+
+    public Pair<Point[], Boolean> blobToVein(Entity entity, Entity vein)
+    {
+        Point entityPoint = ((Actor)entity).getPosition();
+        if (vein.getClass() != Vein.class)
+        {
+            return new Pair<>(new Point[]{entityPoint},false);
+        }
+        Point veinPoint = ((Blacksmith)entity).getPosition();
+
+        if (adjacent(entityPoint,veinPoint))
+        {
+            worldRemoveEntity(vein);
+            return new Pair<>(new Point[]{veinPoint}, true);
+        }
+
+        else
+        {
+            Point newPt = blobNextPosition(entityPoint, veinPoint);
+            Entity oldEntity = getTileOccupant(newPt);
+
+            if (oldEntity.getClass() == Ore.class)
+            {
+                removeEntity(oldEntity);
+            }
+            return new Pair<>(moveEntity(entity,newPt),false);
+        }
+    }
+
+    public Point findOpenAround(Point pt, int distance)
+    {
+        for (int i = -distance; i < distance + 1; i++)
+        {
+            for (int j = -distance; j < distance + 1 ; j++)
+            {
+              Point newPt = new Point(pt.getX() + j, pt.getY() + i);
+
+                if (withinBounds(newPt) && !isOccupied(newPt))
+                {
+                    return newPt;
+                }
+
+            }
+        }
+
+        return null;
+    }
+
+    private void removeEntity(Entity entity)
+    {
+        //for action in pending actions, remove actions
+        worldRemoveEntity(entity);
+    }
+
+    public OreBlob createBlob(String name, Point pt, int rate, int ticks)
+    {
+        Random rand = new Random();
+        OreBlob b = new OreBlob(name, pt, rate, rand.nextInt((BLOB_ANIMATION_MAX * BLOB_ANIMATION_RATE_SCALE) -
+                BLOB_ANIMATION_MIN) + BLOB_ANIMATION_MIN );
+        //schedule
+        return b;
+    }
+
+    public Ore createOre(String name, Point pt, int ticks)
+    {
+        Random rand = new Random();
+        Ore o = new Ore(name, pt, rand.nextInt(ORE_CORRUPT_MAX-ORE_CORRUPT_MIN) + ORE_CORRUPT_MIN);
+        //schedule
+        return o;
+    }
+
+    public Quake createQuake(Point pt, int ticks)
+    {
+        Quake q = new Quake("quake", pt, QUAKE_ANIMATION_RATE);
+        //schedule
+        return q;
+    }
+
+    public Vein createVein(String name, Point pt, int ticks)
+    {
+        Random rand = new Random();
+        Vein v = new Vein("vein" + name, pt, rand.nextInt(VEIN_RATE_MAX - VEIN_RATE_MIN) + VEIN_RATE_MIN, 1);
+        //schedule
+        return v;
+    }
+
 
 
 
