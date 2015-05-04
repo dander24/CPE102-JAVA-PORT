@@ -7,13 +7,13 @@ public class OccupancyGrid
 
     private Entity[][] grid;
 
-    public OccupancyGrid(int Width, int Height, Entity OccupancyVal)
+    public OccupancyGrid(int Height, int Width, Entity OccupancyVal)
     {
-        grid = new Entity[Width][Height];
+        grid = new Entity[Height][Width];
 
-        for (int i = 0; i < Width; i++)
+        for (int i = 0; i < Height; i++)
         {
-            for (int j = 0; j < Height; j++)
+            for (int j = 0; j < Width; j++)
             {
                 grid[i][j] = OccupancyVal;
             }
@@ -22,12 +22,12 @@ public class OccupancyGrid
 
     public void setCell(Point point, Entity value)
     {
-        grid[point.getX()][point.getY()] = value;
+        grid[point.getY()][point.getX()] = value;
     }
 
     public Entity getCell(Point point)
     {
-        return grid[point.getX()][point.getY()];
+        return grid[point.getY()][point.getX()];
     }
 
 }
