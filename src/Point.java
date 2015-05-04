@@ -17,4 +17,26 @@ public class Point
     {
         return y;
     }
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if (! (other instanceof Point))
+        {
+            return false;
+        }
+
+        if (this == other)
+        {
+            return true;
+        }
+
+        if (this.getX() == ((Point) other).getX() && this.getY() == ((Point) other).getY())
+        {
+            return true;
+        }
+
+        return false;
+
+    }
 }

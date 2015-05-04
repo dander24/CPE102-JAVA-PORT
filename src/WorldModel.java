@@ -30,9 +30,9 @@ public class WorldModel
 
     public WorldModel(int rows, int cols, Background _background)
     {
-        background = new OccupancyGrid(numRows,numCols, _background);
         numRows = rows;
         numCols = cols;
+        background = new OccupancyGrid(numRows,numCols, _background);
         occupancy = new OccupancyGrid(numRows,numCols, null);
         entities = new ArrayList<>();
     }
@@ -76,13 +76,13 @@ public class WorldModel
                 (pt1.getY() - pt2.getY()) * (pt1.getY() - pt2.getY()));
     }
 
-    public Entity findNearest(Point pt, Entity type)
+    public Entity findNearest(Point pt, Entity ent)
     {
         ArrayList<Pair<Entity,Double>> ofType = new ArrayList<>();
 
         for(Entity e : entities)
         {
-            if (e.getClass() == type.getClass() )
+            if (e.getClass() == ent.getClass() )
             {
                 ofType.add(new Pair<>(e, distanceSquared(pt, ((Actor)e).getPosition())));
             }
@@ -280,7 +280,7 @@ public class WorldModel
         {
             return new Pair<>(new Point[]{entityPoint},false);
         }
-        Point veinPoint = ((Blacksmith)entity).getPosition();
+        Point veinPoint = ((Vein)vein).getPosition();
 
         if (adjacent(entityPoint,veinPoint))
         {

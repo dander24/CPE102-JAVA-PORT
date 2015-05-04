@@ -122,4 +122,100 @@ public class Tests
         assertEquals(v.getRate(),2);
         assertEquals(v.getResourceDistance(),1);
     }
+
+    //world model tests from here
+    //the following world will be used for all tests, and unless there are any mistakes it will be reset to it's
+    //default state with the completion of every test
+
+    private WorldModel world = new WorldModel(5,5, new Background("background"));
+
+    //contains grid x,y|0-4
+
+    //these test cases test several related functions in conjunction
+    @Test public void testBoundsOccupied()
+    {
+        Point pt = new Point(1,1);
+        assertTrue(world.withinBounds(pt));
+        assertTrue(!world.isOccupied(pt));
+    }
+
+    @Test public void testNearestEntity()
+    {
+
+        //adds ore, tests nearest, moves it, tests again, removes it, and tests previous ore locations vacated
+        world.addEntity(world.createOre("o1", new Point(1,2),2));
+        world.addEntity(world.createOre("o2", new Point(0, 0), 2));
+        Ore o3 = new Ore("o3", new Point(4, 4), 2);
+        world.addEntity(o3);
+
+
+        assertEquals(world.getTileOccupant(new Point(1, 2)).getName(), "o1");
+        assertEquals(world.getTileOccupant(new Point(0, 0)).getName(), "o2");
+        assertEquals(world.getTileOccupant(new Point(4, 4)), o3);
+
+        assertEquals(world.findNearest(new Point(1, 1), new Ore("o4", new Point(4, 4), 2)),
+                world.getTileOccupant(new Point(1, 2)));
+
+        world.moveEntity(world.getTileOccupant(new Point(1, 2)), new Point(2, 1));
+        assertEquals(world.findNearest(new Point(1, 1), new Ore("o4", new Point(4, 4), 2)),
+                world.getTileOccupant(new Point(2, 1)));
+
+        world.worldRemoveEntity(world.createOre("o1", new Point(2, 1), 2));
+        world.worldRemoveEntity(world.createOre("o2", new Point(0, 0), 2));
+        world.worldRemoveEntity(world.createOre("o3", new Point(4, 4), 2));
+
+        assertEquals(world.getTileOccupant(new Point(2, 1)), null);
+        assertEquals(world.getTileOccupant(new Point(0, 0)), null);
+        assertEquals(world.getTileOccupant(new Point(4, 4)), null);
+
+    }
+
+    @Test public void testWorldBackground()
+    {
+        //sets bg to vein, checks it, removes, checks vacated
+        Vein vn = world.createVein("vein", new Point(0,0),5);
+
+
+
+        world.setBackground(new Point(0,0),vn);
+
+        assertEquals(world.getBackground(vn.getPosition()), vn);
+
+        world.setBackground(vn.getPosition(), null);
+
+        assertEquals(world.getBackground(vn.getPosition()), null);
+
+    }
+
+    @Test public void testNextPosition()
+    {
+
+        //set up the obstacles to allow all if paths
+        Ore o1 = new Ore("o1", new Point(2,2),1);
+        Ore o2 = new Ore("o2", new Point(3,1),1);
+        world.addEntity(o1);
+        world.addEntity(o2);
+
+        //create the first testee
+        Miner m = new MinerFull("m", new Point(2,1),1,1,1);
+        world.addEntity(m);
+
+        //test all new position patterns
+        assertEquals(world.nextPosition(m.getPosition(), new Point(1, 1)), new Point(1,1));
+        assertEquals(world.nextPosition(m.getPosition(), new Point(4,1)), new Point(2,1));
+        assertEquals(world.nextPosition(m.getPosition(), new Point(2,4)), new Point(2,1));
+        assertEquals(world.nextPosition(m.getPosition(), new Point(2,0)), new Point(2,0));
+
+        //move miner to act as additional ignorable object, ensure moved
+        world.moveEntity(m, new Point(1,1));
+
+        assertEquals(world.getTileOccupant(m.getPosition()), m);
+
+        //create second testee
+
+
+
+
+    }
+
 }
