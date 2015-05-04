@@ -1,10 +1,5 @@
 public class OccupancyGrid
 {
-    //occupancy values
-    private final int EMPTY = 0, GATHERER = 1, GENERATOR = 2, RESOURCE = 3;
-
-    private int width, height;
-
     private Entity[][] grid;
 
     public OccupancyGrid(int Height, int Width, Entity OccupancyVal)
