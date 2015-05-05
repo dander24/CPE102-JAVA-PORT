@@ -309,7 +309,7 @@ public class WorldModel
             {
               Point newPt = new Point(pt.getX() + j, pt.getY() + i);
 
-                if (withinBounds(newPt) && !isOccupied(newPt))
+                if (withinBounds(newPt) && !(isOccupied(newPt)))
                 {
                     return newPt;
                 }

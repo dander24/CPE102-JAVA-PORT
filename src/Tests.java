@@ -155,6 +155,13 @@ public class Tests
         Point pt = new Point(1,1);
         assertTrue(world.withinBounds(pt));
         assertTrue(!world.isOccupied(pt));
+
+        Ore o3 = new Ore("o3", new Point(1, 1), 2);
+        world.addEntity(o3);
+        assertTrue(world.isOccupied(pt));
+
+
+
     }
 
     @Test public void testNearestEntity()
@@ -254,7 +261,7 @@ public class Tests
         Ore o = new Ore("o", new Point(3,2),1);
         Blacksmith b = new Blacksmith("b", new Point(4,1),9,9);
         OreBlob ob = new OreBlob("blob", new Point(3,1),1,1);
-        Vein v = new Vein("v", new Point(0,0),1,1);
+        Vein v = new Vein("v", new Point(3,3),1,1);
 
         world.addEntity(m);
         world.addEntity(o);
@@ -277,7 +284,7 @@ public class Tests
         assertEquals(world.minerToOre(m, o).getValue(), true);
 
         //test ore removal
-        assertEquals(world.getTileOccupant(new Point(2,2)),null);
+        assertEquals(world.getTileOccupant(new Point(2, 2)),null);
         //miner m now has a resource count of 2, this will be important in later tests
         assertEquals(m.getResourceCount(), 2);
         assertEquals(b.getResourceCount(), 0);
@@ -296,11 +303,41 @@ public class Tests
         assertEquals(b.getResourceCount(), 2);
         assertEquals(m.getResourceCount(), 0);
 
+        //initialize for last set of tests
+        Ore o2 = new Ore("o2", new Point(4,1),1);
+        world.addEntity(o2);
 
+        assertEquals(world.blobToVein(m, b).getKey()[0], new Point(4, 2));
+        assertEquals(world.blobToVein(m,b).getValue(), false);
+
+        assertEquals(world.blobToVein(b,v).getKey()[0], new Point(4,1));
+        assertEquals(world.blobToVein(b,v).getValue(), false);
+        //test that o2 is deleted as expected
+        assertEquals(world.getTileOccupant(new Point(4,1)),b);
+
+        world.moveEntity(v, new Point(4, 2));
+        assertEquals(world.blobToVein(b, v).getValue(), true);
+        //new vein because original is deleted above
+        Vein v2 = new Vein("v", new Point(4,2),1,1);
+        assertEquals(world.blobToVein(b, v2).getKey()[0], new Point(4, 2));
+
+        //world not cleared for use in following tests
 
     }
 
+    @Test public void testFindOpenAround()
+    {
+        assertEquals(world.findOpenAround(new Point(4, 1), 1), new Point(3,0));
+        Vein v2 = new Vein("v", new Point(0,0),1,1);
+        world.addEntity(v2);
+        assertEquals(world.findOpenAround(new Point(0, 0), 0), null);
+
+    }
+
+
+
     //not sure how to test "create x", as it involves RNG and doesn't really do anything new. I used a few of them
-    //around the tests, and honestly I'm pretty sure they work since they're glorified constructors
+    //around the tests, and honestly I'm pretty sure they work since they're glorified constructors until they get
+    //scheduling functionality
 
 }
