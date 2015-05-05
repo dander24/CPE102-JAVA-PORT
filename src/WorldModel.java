@@ -213,12 +213,12 @@ public class WorldModel
         int horiz = sign(DestinationPt.getX() - EntityPt.getX());
         Point newPt = new Point(EntityPt.getX()+horiz, EntityPt.getY());
 
-        if (horiz == 0 | getTileOccupant(newPt).getClass() != Ore.class)
+        if (horiz == 0 | !(getTileOccupant(newPt) instanceof Ore))
         {
             int vert = sign(DestinationPt.getY() - EntityPt.getY());
             newPt = new Point(EntityPt.getX(), EntityPt.getY() + vert);
 
-            if (vert == 0 | getTileOccupant(newPt).getClass() != Ore.class)
+            if (vert == 0 | !(getTileOccupant(newPt) instanceof Ore))
             {
                 newPt = new Point (EntityPt.getX(), EntityPt.getY());
             }
@@ -230,11 +230,11 @@ public class WorldModel
     public Pair<Point[], Boolean> minerToOre(Entity entity, Entity ore)
 {
     Point entityPoint = ((Actor)entity).getPosition();
-    if (ore.getClass() != Ore.class)
+    if (!(ore instanceof Ore))
     {
         return new Pair<>(new Point[]{entityPoint},false);
     }
-    Point orePoint = ((Ore)entity).getPosition();
+    Point orePoint = ((Ore)ore).getPosition();
 
     if (adjacent(entityPoint,orePoint))
     {
@@ -252,7 +252,7 @@ public class WorldModel
     public Pair<Point[], Boolean> minerToSmith(Entity entity, Entity smith)
     {
         Point entityPoint = ((Actor)entity).getPosition();
-        if (smith.getClass() != Blacksmith.class)
+        if (!(smith instanceof Blacksmith))
         {
             return new Pair<>(new Point[]{entityPoint},false);
         }
@@ -276,7 +276,7 @@ public class WorldModel
     public Pair<Point[], Boolean> blobToVein(Entity entity, Entity vein)
     {
         Point entityPoint = ((Actor)entity).getPosition();
-        if (vein.getClass() != Vein.class)
+        if (!(vein instanceof Vein))
         {
             return new Pair<>(new Point[]{entityPoint},false);
         }

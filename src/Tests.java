@@ -1,6 +1,8 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import javafx.util.Pair;
 import org.junit.Test;
 import org.junit.Before;
 
@@ -28,14 +30,18 @@ public class Tests
         assertEquals(m.getRate(), 5);
         assertEquals(m.getResourceLimit(), 5);
         assertEquals(m.getResourceCount(), 0);
+        m.setResourceCount(3);
+        assertEquals(m.getResourceCount(), 3);
 
-        assertEquals(n.getName(),"m2");
+        assertEquals(n.getName(), "m2");
         assertEquals(n.getSelfString(), "minerm211333");
         assertEquals(n.getPosition(), p);
         assertEquals(n.getAnimationRate(), 3);
         assertEquals(n.getRate(), 3);
         assertEquals(n.getResourceLimit(), 3);
         assertEquals(n.getResourceCount(), 0);
+        n.setResourceCount(5);
+        assertEquals(n.getResourceCount(), 5);
 
     }
 
@@ -123,6 +129,22 @@ public class Tests
         assertEquals(v.getResourceDistance(),1);
     }
 
+    @Test public void testBlacksmith()
+    {
+        Blacksmith b = new Blacksmith("smith", new Point(1,1),3,2);
+
+        assertEquals(b.getSelfString(),"blacksmithsmith11231");
+        assertEquals(b.getName(),"smith");
+        assertEquals(b.getResourceLimit(),2);
+        assertEquals(b.getResourceDistance(),1);
+        assertEquals(b.getRate(),3);
+        assertEquals(b.getPosition(), new Point(1,1));
+        assertEquals(b.getResourceCount(),0);
+        b.setResourceCount(2);
+        assertEquals(b.getResourceCount(), 2);
+
+    }
+
     //world model tests from here
     //the following world will be used for all tests, and unless there are any mistakes it will be reset to it's
     //default state with the completion of every test
@@ -202,9 +224,9 @@ public class Tests
 
         //test all new position patterns
         assertEquals(world.nextPosition(m.getPosition(), new Point(1, 1)), new Point(1,1));
-        assertEquals(world.nextPosition(m.getPosition(), new Point(4,1)), new Point(2,1));
-        assertEquals(world.nextPosition(m.getPosition(), new Point(2,4)), new Point(2,1));
-        assertEquals(world.nextPosition(m.getPosition(), new Point(2,0)), new Point(2,0));
+        assertEquals(world.nextPosition(m.getPosition(), new Point(4, 1)), new Point(2, 1));
+        assertEquals(world.nextPosition(m.getPosition(), new Point(2, 4)), new Point(2, 1));
+        assertEquals(world.nextPosition(m.getPosition(), new Point(2, 0)), new Point(2,0));
 
         //move miner to act as additional ignorable object, ensure moved
         world.moveEntity(m, new Point(1,1));
@@ -212,10 +234,62 @@ public class Tests
         assertEquals(world.getTileOccupant(m.getPosition()), m);
 
         //create second testee
+        OreBlob ob = new OreBlob("blob", new Point(2,1),1,1);
 
+        //test all new position patterns
+        assertEquals(world.blobNextPosition(ob.getPosition(), new Point(1, 1)), new Point(2,1));
+        assertEquals(world.blobNextPosition(ob.getPosition(), new Point(4, 1)), new Point(3, 1));
+        assertEquals(world.blobNextPosition(ob.getPosition(), new Point(2, 4)), new Point(2, 2));
+        assertEquals(world.blobNextPosition(ob.getPosition(), new Point(2, 0)), new Point(2,1));
+
+        //clear and test clear
+        world.worldRemoveEntity(ob);
+        world.worldRemoveEntity(m);
+
+        assertEquals(world.getTileOccupant(new Point(2, 1)), null);
+        assertEquals(world.getTileOccupant(new Point(1,1)), null);
+
+    }
+
+    @Test public void testThingToOtherThing()
+    {
+        //prepare objects for test cases
+        Miner m = new MinerFull("m", new Point(2,1),1,1,1);
+        Ore o = new Ore("o", new Point(3,2),1);
+        Blacksmith b = new Blacksmith("b", new Point(4,1),9,9);
+        OreBlob ob = new OreBlob("blob", new Point(3,1),1,1);
+        Vein v = new Vein("v", new Point(0,0),1,1);
+
+        world.addEntity(m);
+        world.addEntity(o);
+        world.addEntity(b);
+        world.addEntity(ob);
+        world.addEntity(v);
+
+        //the lists contained in the paris are not comparable because list doesn't have a proper equals override, apparently ÅR(ÅLÅ[ÅM)Ém
+        assertEquals(world.minerToOre(o, b).getKey()[0], new Point(3, 2));
+        assertEquals(world.minerToOre(o, b).getValue(), false);
+
+        //third test doesn't work without firs two tests in this set. No, I can't explain it
+        assertEquals(world.minerToOre(m, o).getKey()[0].getX(), 2);
+        assertEquals(world.minerToOre(m, o).getKey()[0].getY(), 2);
+        assertEquals(world.minerToOre(m, o).getKey()[0], new Point(2,2));
+        assertEquals(world.minerToOre(m, o).getValue(), false);
+
+        o.setPosition(new Point(2, 2));
+        assertEquals(world.minerToOre(m, o).getKey()[0], new Point(0, 2));
+        assertEquals(world.minerToOre(m, o).getValue(), true);
+
+        //test ore removal
+        assertEquals(world.getTileOccupant(new Point(2,2)),null);
+        //miner m now has a resource count of 1, this will be important in later tests
+
+        
 
 
 
     }
+
+    //not sure how to test create x, as it involves RNG. I used a few of them around the assignment, and honestly I'm pretty sure they work
 
 }
