@@ -26,12 +26,12 @@ public class Point
             return false;
         }
 
-        if (this == other)
+        else if (this == other)
         {
             return true;
         }
 
-        if (this.getX() == ((Point) other).getX() && this.getY() == ((Point) other).getY())
+        else if (this.getX() == ((Point) other).getX() && this.getY() == ((Point) other).getY())
         {
             return true;
         }

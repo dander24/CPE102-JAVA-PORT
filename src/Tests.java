@@ -1,10 +1,6 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import javafx.util.Pair;
 import org.junit.Test;
-import org.junit.Before;
 
 public class Tests
 {
@@ -266,14 +262,14 @@ public class Tests
         world.addEntity(ob);
         world.addEntity(v);
 
-        //the lists contained in the paris are not comparable because list doesn't have a proper equals override, apparently ÅR(ÅLÅ[ÅM)Ém
+        //the lists contained in the paris are not comparable because list doesn't have a proper equals override,
+        // apparently ÅR(ÅLÅ[ÅM)Ém
         assertEquals(world.minerToOre(o, b).getKey()[0], new Point(3, 2));
         assertEquals(world.minerToOre(o, b).getValue(), false);
 
-        //third test doesn't work without firs two tests in this set. No, I can't explain it
         assertEquals(world.minerToOre(m, o).getKey()[0].getX(), 2);
         assertEquals(world.minerToOre(m, o).getKey()[0].getY(), 2);
-        assertEquals(world.minerToOre(m, o).getKey()[0], new Point(2,2));
+        assertEquals(world.minerToOre(m, o).getKey()[0], new Point(2, 2));
         assertEquals(world.minerToOre(m, o).getValue(), false);
 
         o.setPosition(new Point(2, 2));
@@ -282,14 +278,29 @@ public class Tests
 
         //test ore removal
         assertEquals(world.getTileOccupant(new Point(2,2)),null);
-        //miner m now has a resource count of 1, this will be important in later tests
+        //miner m now has a resource count of 2, this will be important in later tests
+        assertEquals(m.getResourceCount(), 2);
+        assertEquals(b.getResourceCount(), 0);
 
-        
+        //test the fail cases
+        assertEquals(world.minerToSmith(b,ob).getKey()[0], new Point(4,1));
+        assertEquals(world.minerToSmith(b,ob).getValue(), false);
+
+        assertEquals(world.minerToSmith(m, b).getKey()[0], new Point(1, 2));
+        assertEquals(world.minerToSmith(m, b).getValue(), false);
+
+        m.setPosition(new Point(4, 2));
+
+        assertEquals(world.minerToSmith(m, b).getKey()[0], new Point(4, 1));
+        assertEquals(world.minerToSmith(m, b).getValue(), true);
+        assertEquals(b.getResourceCount(), 2);
+        assertEquals(m.getResourceCount(), 0);
 
 
 
     }
 
-    //not sure how to test create x, as it involves RNG. I used a few of them around the assignment, and honestly I'm pretty sure they work
+    //not sure how to test "create x", as it involves RNG and doesn't really do anything new. I used a few of them
+    //around the tests, and honestly I'm pretty sure they work since they're glorified constructors
 
 }

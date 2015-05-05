@@ -184,7 +184,7 @@ public class WorldModel
     private boolean adjacent(Point pt1, Point pt2)
     {
         return ( ((pt1.getX() == pt2.getX()) && Math.abs(pt1.getY() - pt2.getY()) == 1) |
-            (pt1.getY() == pt2.getY()) && Math.abs(pt1.getX() - pt2.getX()) == 1);
+                ((pt1.getY() == pt2.getY()) && Math.abs(pt1.getX() - pt2.getX()) == 1));
     }
 
     //end code ported from actions
@@ -238,7 +238,7 @@ public class WorldModel
 
     if (adjacent(entityPoint,orePoint))
     {
-        ((Miner)entity).setResourceCount(1 + ((Miner) entity).getResourceCount());;
+        ((Miner)entity).setResourceCount(1 + ((Miner) entity).getResourceCount());
         worldRemoveEntity(ore);
         return new Pair<>(new Point[]{orePoint}, true);
     }
@@ -256,12 +256,12 @@ public class WorldModel
         {
             return new Pair<>(new Point[]{entityPoint},false);
         }
-        Point smithPoint = ((Blacksmith)entity).getPosition();
+        Point smithPoint = ((Blacksmith)smith).getPosition();
 
         if (adjacent(entityPoint,smithPoint))
         {
-            ((Blacksmith)entity).setResourceCount(((Miner) entity).getResourceCount() +
-                    ((Blacksmith) entity).getResourceCount());
+            ((Blacksmith)smith).setResourceCount(((Miner) entity).getResourceCount() +
+                    ((Blacksmith) smith).getResourceCount());
             ((Miner)entity).setResourceCount(0);
             return new Pair<>(new Point[]{smithPoint}, true);
         }

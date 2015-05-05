@@ -21,7 +21,7 @@ public class Blacksmith extends ActorDist
 
     public void setResourceCount(int i)
     {
-        resourceCount += i;
+        resourceCount = i;
     }
 
     public String getSelfString()
