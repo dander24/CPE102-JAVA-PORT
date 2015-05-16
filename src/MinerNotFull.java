@@ -1,8 +1,12 @@
+import processing.core.PImage;
+
+import java.util.List;
+
 public class MinerNotFull extends Miner
 {
-    public MinerNotFull(String name, Point position, int rate, int resourceLimit, int AnimationRate)
+    public MinerNotFull(String name, Point position, int rate, int resourceLimit, int AnimationRate, List<PImage> pImages)
     {
-        super(name, position, rate, resourceLimit, AnimationRate);
+        super(name, position, rate, resourceLimit, AnimationRate, pImages);
     }
 
     public String getSelfString()

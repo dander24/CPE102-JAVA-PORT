@@ -37,6 +37,16 @@ public class WorldModel
         entities = new ArrayList<>();
     }
 
+    public int getNumRows()
+    {
+        return  numRows;
+    }
+
+    public int getNumCols()
+    {
+        return  numCols;
+    }
+
     public boolean withinBounds(Point pt)
     {
         return (pt.getX() >= 0 && pt.getX() < numCols && pt.getY() >= 0 && pt.getY() < numRows );
@@ -163,6 +173,11 @@ public class WorldModel
         }
 
         return null;
+    }
+
+    public ArrayList<Entity> getEntities()
+    {
+        return entities;
     }
 
     //code ported from actions, would fit in a utility class but they're pretty much stray methods and don't get used elsewhere (I think)

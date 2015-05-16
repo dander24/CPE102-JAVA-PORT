@@ -1,0 +1,24 @@
+functional interface
+interface action
+action create action
+	void run
+	
+	
+A*
+
+based on estimate of cost to reach goal
+
+f(x) = g(x) + h(x)  
+
+g(x) is actual cost to reach this node from start
+h(x) is estimate of cost from this node to the goal (heuristic / educated guess)
+
+
+keep and open set
+	- on the fringe/frontier of search
+		ordered by f-values
+		
+		
+h - manhattan distance (distance in x and y, no diagnal)
+
+see wikipedia for A* pseudocode

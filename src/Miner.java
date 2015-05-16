@@ -1,10 +1,13 @@
+import processing.core.PImage;
+import java.util.List;
+
 public class Miner extends Actor
 {
     private int resourceCount, resourceLimit, animationRate;
 
-    public Miner(String name, Point position, int rate, int ResourceLimit, int AnimationRate)
+    public Miner(String name, Point position, int rate, int ResourceLimit, int AnimationRate, List<PImage> pImages)
     {
-        super(name,position,rate);
+        super(name,position,rate,pImages);
         resourceCount = 0;
         resourceLimit = ResourceLimit;
         animationRate = AnimationRate;

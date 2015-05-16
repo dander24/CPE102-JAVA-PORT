@@ -1,8 +1,11 @@
+import processing.core.PImage;
+import java.util.List;
+
 public class Vein extends ActorDist
 {
-    public Vein(String name, Point position, int rate, int distance)
+    public Vein(String name, Point position, int rate, int distance, List<PImage> pImages)
     {
-        super(name,  position, rate, distance);
+        super(name,  position, rate, distance, pImages);
     }
 
     public String getSelfString()

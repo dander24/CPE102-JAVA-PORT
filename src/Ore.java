@@ -1,8 +1,11 @@
+import processing.core.PImage;
+import java.util.List;
+
 public class Ore extends Actor
 {
-    public Ore(String name, Point position, int Rate)
+    public Ore(String name, Point position, int Rate, List<PImage> pImages)
     {
-        super(name, position,Rate);
+        super(name, position,Rate, pImages);
     }
 
     public String getSelfString()
