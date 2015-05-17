@@ -70,4 +70,9 @@ public class ImageStore {
 
     }
 
+    public String getDEFAULT_IMAGE_NAME()
+    {
+        return DEFAULT_IMAGE_NAME;
+    }
+
 }

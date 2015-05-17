@@ -98,8 +98,8 @@ public class SaveLoad {
 
     }
 
-    public void loadWorld(WorldModel world, Map<String, List<PImage>> images, File file) {
-        boolean run = false;
+    public void loadWorld(WorldModel world, Map<String, List<PImage>> images, File file, Boolean runAfter) {
+        boolean run = runAfter;
         try {
             fin = new Scanner(file.getAbsolutePath());
             while (fin.hasNextLine()) {
