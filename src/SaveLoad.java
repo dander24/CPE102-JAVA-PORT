@@ -126,7 +126,7 @@ public class SaveLoad {
     private void addEntity(WorldModel world, String[] properties, Map<String, List<PImage>> images, boolean run) {
 
         Entity newEntity = createFromProperties(properties, images);
-        if (!(newEntity == null)) {
+        if (newEntity != null) {
             world.addEntity(newEntity);
             if (run) {
                 //scheduleEntity(world, newEntity, images);
