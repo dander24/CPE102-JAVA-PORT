@@ -1,9 +1,11 @@
 import javafx.util.Pair;
+import processing.core.PImage;
 
 import java.lang.reflect.Type;
 import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class WorldModel
@@ -94,7 +96,7 @@ public class WorldModel
         {
             if (e.getClass() == ent.getClass() )
             {
-                ofType.add(new Pair<>(e, distanceSquared(pt, ((Actor)e).getPosition())));
+                ofType.add(new Pair<>(e, distanceSquared(pt, ((NonStatic) e).getPosition())));
             }
         }
 
@@ -103,7 +105,7 @@ public class WorldModel
 
     public void addEntity(Entity entity)
     {
-        Point pt = new Point( ((Actor)entity).getPosition().getX(),((Actor)entity).getPosition().getY() );
+        Point pt = new Point( ((NonStatic)entity).getPosition().getX(),((NonStatic)entity).getPosition().getY() );
         if (withinBounds(pt))
         {
             Entity oldEntity = occupancy.getCell(pt);
@@ -341,34 +343,35 @@ public class WorldModel
         worldRemoveEntity(entity);
     }
 
-    public OreBlob createBlob(String name, Point pt, int rate, int ticks)
+    public OreBlob createBlob(String name, Point pt, int rate, int ticks, Map<String, List<PImage>> imageStore)
     {
         Random rand = new Random();
         OreBlob b = new OreBlob(name, pt, rate, rand.nextInt((BLOB_ANIMATION_MAX * BLOB_ANIMATION_RATE_SCALE) -
-                BLOB_ANIMATION_MIN) + BLOB_ANIMATION_MIN );
+                BLOB_ANIMATION_MIN) + BLOB_ANIMATION_MIN, imageStore.get("blob") );
         //schedule
         return b;
     }
 
-    public Ore createOre(String name, Point pt, int ticks)
+    public Ore createOre(String name, Point pt, int ticks,  Map<String, List<PImage>> imageStore)
     {
         Random rand = new Random();
-        Ore o = new Ore(name, pt, rand.nextInt(ORE_CORRUPT_MAX-ORE_CORRUPT_MIN) + ORE_CORRUPT_MIN);
+        Ore o = new Ore(name, pt, rand.nextInt(ORE_CORRUPT_MAX-ORE_CORRUPT_MIN) + ORE_CORRUPT_MIN, imageStore.get("ore"));
         //schedule
         return o;
     }
 
-    public Quake createQuake(Point pt, int ticks)
+    public Quake createQuake(Point pt, int ticks,  Map<String, List<PImage>> imageStore)
     {
-        Quake q = new Quake("quake", pt, QUAKE_ANIMATION_RATE);
+        Quake q = new Quake("quake", pt, QUAKE_ANIMATION_RATE, imageStore.get("quake"));
         //schedule
         return q;
     }
 
-    public Vein createVein(String name, Point pt, int ticks)
+    public Vein createVein(String name, Point pt, int ticks,  Map<String, List<PImage>> imageStore)
     {
         Random rand = new Random();
-        Vein v = new Vein("vein" + name, pt, rand.nextInt(VEIN_RATE_MAX - VEIN_RATE_MIN) + VEIN_RATE_MIN, 1);
+        Vein v = new Vein("vein" + name, pt, rand.nextInt(VEIN_RATE_MAX - VEIN_RATE_MIN) + VEIN_RATE_MIN, 1,
+                imageStore.get("vein"));
         //schedule
         return v;
     }

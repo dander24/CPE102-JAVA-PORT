@@ -4,7 +4,7 @@ import org.junit.Test;
 
 public class Tests
 {
-
+/*
     @Test
     public void testBackground()
     {
@@ -338,6 +338,6 @@ public class Tests
 
     //not sure how to test "create x", as it involves RNG and doesn't really do anything new. I used a few of them
     //around the tests, and honestly I'm pretty sure they work since they're glorified constructors until they get
-    //scheduling functionality
+    //scheduling functionality */
 
 }

@@ -61,11 +61,9 @@ public class SaveLoad {
             VEIN_ROW = 3,
             VEIN_REACH = 5;
 
-    Scanner fin;
-    PrintWriter fout;
+    private Scanner fin;
 
-
-    public void saveWorld(WorldModel world, File file) {
+   /* public void saveWorld(WorldModel world, File file) {
         saveEntities(world, file);
         saveBackground(world, file);
     }
@@ -96,14 +94,14 @@ public class SaveLoad {
             }
         }
 
-    }
+    }*/
 
     public void loadWorld(WorldModel world, Map<String, List<PImage>> images, File file, Boolean runAfter) {
         boolean run = runAfter;
         try {
-            fin = new Scanner(file.getAbsolutePath());
+            fin = new Scanner(new FileInputStream(file));
             while (fin.hasNextLine()) {
-                String[] properties = fin.nextLine().split("//s");
+                String[] properties = fin.nextLine().split("\\s");
                 if (properties[PROPERTY_KEY] == BGND_KEY) {
                     addBackground(world, properties, images);
                 } else {
@@ -162,10 +160,10 @@ public class SaveLoad {
     private Miner createMiner(String[] properties, Map<String, List<PImage>> images) {
         if (properties.length == MINER_NUM_PROPERTIES) {
             Miner m = new Miner(properties[MINER_NAME],
-                    new Point(Integer.getInteger(properties[MINER_ROW]), Integer.getInteger(properties[MINER_COL])),
-                    Integer.getInteger(properties[MINER_RATE]),
-                    Integer.getInteger(properties[MINER_LIMIT]),
-                    Integer.getInteger(properties[MINER_ANIMATION_RATE]), images.get(MINER_KEY));
+                    new Point(Integer.parseInt(properties[MINER_ROW]), Integer.parseInt(properties[MINER_COL])),
+                    Integer.parseInt(properties[MINER_RATE]),
+                    Integer.parseInt(properties[MINER_LIMIT]),
+                    Integer.parseInt(properties[MINER_ANIMATION_RATE]), images.get(MINER_KEY));
             return m;
         }
         return null;
@@ -174,9 +172,9 @@ public class SaveLoad {
     private Vein createVein(String[] properties, Map<String, List<PImage>> images) {
         if (properties.length == VEIN_NUM_PROPERTIES) {
             Vein v = new Vein(properties[VEIN_NAME],
-                    new Point(Integer.getInteger(properties[VEIN_ROW]), Integer.getInteger(properties[VEIN_COL])),
-                    Integer.getInteger(properties[VEIN_RATE]),
-                    Integer.getInteger(properties[VEIN_REACH]),
+                    new Point(Integer.parseInt(properties[VEIN_ROW]), Integer.parseInt(properties[VEIN_COL])),
+                    Integer.parseInt(properties[VEIN_RATE]),
+                    Integer.parseInt(properties[VEIN_REACH]),
                     images.get(VEIN_KEY));
             return v;
         }
@@ -186,8 +184,8 @@ public class SaveLoad {
     private Ore createOre(String[] properties, Map<String, List<PImage>> images) {
         if (properties.length == ORE_NUM_PROPERTIES) {
             Ore o = new Ore(properties[ORE_NAME],
-                    new Point(Integer.getInteger(properties[ORE_ROW]), Integer.getInteger(properties[ORE_COL])),
-                    Integer.getInteger(properties[ORE_RATE]),
+                    new Point(Integer.parseInt(properties[ORE_ROW]), Integer.parseInt(properties[ORE_COL])),
+                    Integer.parseInt(properties[ORE_RATE]),
                     images.get(ORE_KEY));
             return o;
         }
@@ -198,9 +196,9 @@ public class SaveLoad {
         if (properties.length == SMITH_NUM_PROPERTIES)
         {
             Blacksmith b = new Blacksmith(properties[SMITH_NAME],
-                    new Point(Integer.getInteger(properties[SMITH_ROW]),Integer.getInteger(properties[SMITH_COL])),
-                    Integer.getInteger(properties[SMITH_RATE]),
-                    Integer.getInteger(properties[SMITH_LIMIT]),
+                    new Point(Integer.parseInt(properties[SMITH_ROW]),Integer.parseInt(properties[SMITH_COL])),
+                    Integer.parseInt(properties[SMITH_RATE]),
+                    Integer.parseInt(properties[SMITH_LIMIT]),
                     images.get(SMITH_KEY));
             return b;
         }
@@ -211,8 +209,8 @@ public class SaveLoad {
         if (properties.length == OBSTACLE_NUM_PROPERTIES)
         {
             Obstacle o = new Obstacle(properties[OBSTACLE_NAME],
-                    new Point(Integer.getInteger(properties[OBSTACLE_ROW]),
-                            Integer.getInteger(properties[OBSTACLE_COL])),
+                    new Point(Integer.parseInt(properties[OBSTACLE_ROW]),
+                            Integer.parseInt(properties[OBSTACLE_COL])),
                     images.get(OBSTACLE_KEY));
             return o;
         }
