@@ -2,18 +2,11 @@ import processing.core.PImage;
 
 import java.util.List;
 
-public class OreBlob extends Actor
+public class OreBlob extends Animated
 {
-    private int animationRate;
-
     public OreBlob(String name, Point position, int rate, int AnimationRate, List<PImage> pImages)
     {
-        super(name,position,rate, pImages);
-        animationRate = AnimationRate;
+        super(name,position,pImages,rate,AnimationRate);
     }
 
-    public int getAnimationRate()
-    {
-        return animationRate;
-    }
 }

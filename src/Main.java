@@ -51,7 +51,7 @@ public class Main extends PApplet {
 
     @Override
     public void draw() {
-        background(0);
+        view.updateWorld();
         view.updateView();
     }
 

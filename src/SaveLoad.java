@@ -130,7 +130,7 @@ public class SaveLoad {
         if (newEntity != null) {
             world.addEntity(newEntity);
             if (run) {
-                //scheduleEntity(world, newEntity, images);
+                scheduleEntity(world,newEntity,images);
             }
         }
     }
@@ -220,20 +220,20 @@ public class SaveLoad {
 
 
 
-/*    private void scheduleEntity(WorldModel world, Entity e, Map<String, List<PImage>> images)
+   private void scheduleEntity(WorldModel world, Entity e, Map<String, List<PImage>> images)
     {
         if (e instanceof MinerNotFull)
         {
-            world.scheduleMiner(e, 0, images);
+            world.scheduleMiner((MinerNotFull)e, images);
         }
         if (e instanceof Vein)
         {
-            world.scheduleVein(e, 0, images);
+            world.scheduleVein((Vein)e,images);
         }
         if (e instanceof Ore)
         {
-            world.scheduleOre(e, 0, images);
+            world.scheduleOre((Ore)e, images);
         }
-    }*/
+    }
 }
 

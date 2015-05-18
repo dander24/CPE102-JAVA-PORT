@@ -1,18 +1,12 @@
 import processing.core.PImage;
 import java.util.List;
 
-public class Quake extends NonStatic
+public class Quake extends Animated
 {
-    private int animationRate;
 
     public Quake(String name, Point position, int AnimationRate, List<PImage> pImages)
     {
-        super(name,position,pImages);
-        animationRate = AnimationRate;
+        super(name,position,pImages,0,AnimationRate); //inheritance is unmanageable without this having a rate
     }
 
-    public int getAnimationRate()
-    {
-        return animationRate;
-    }
 }

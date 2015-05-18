@@ -29,6 +29,12 @@ public class WorldView
     {
         drawBackground();
         drawEntities();
+        world.updateOnTime(System.currentTimeMillis());
+    }
+
+    public void updateWorld()
+    {
+        world.updateOnTime(System.currentTimeMillis());
     }
 
     private Point viewportToWorld(Point pt)

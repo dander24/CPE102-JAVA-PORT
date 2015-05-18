@@ -22,3 +22,12 @@ keep and open set
 h - manhattan distance (distance in x and y, no diagnal)
 
 see wikipedia for A* pseudocode
+
+
+Generics
+
+interface List<T>
+
+List<String>
+
+class Pair<T,R>
