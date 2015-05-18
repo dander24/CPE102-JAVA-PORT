@@ -9,7 +9,8 @@ import java.util.Scanner;
 import processing.core.*;
 
 public class SaveLoad {
-    private final int PROPERTY_KEY = 0;
+    private final int PROPERTY_KEY = 0, COLOR_MASK = 0xffffff;
+
 
     private final String BGND_KEY = "background",
             MINER_KEY = "miner",
@@ -102,7 +103,7 @@ public class SaveLoad {
             fin = new Scanner(new FileInputStream(file));
             while (fin.hasNextLine()) {
                 String[] properties = fin.nextLine().split("\\s");
-                if (properties[PROPERTY_KEY] == BGND_KEY) {
+                if (properties[PROPERTY_KEY].equals(BGND_KEY)) {
                     addBackground(world, properties, images);
                 } else {
                     addEntity(world, properties, images, run);
@@ -160,7 +161,7 @@ public class SaveLoad {
     private Miner createMiner(String[] properties, Map<String, List<PImage>> images) {
         if (properties.length == MINER_NUM_PROPERTIES) {
             Miner m = new Miner(properties[MINER_NAME],
-                    new Point(Integer.parseInt(properties[MINER_ROW]), Integer.parseInt(properties[MINER_COL])),
+                    new Point(Integer.parseInt(properties[MINER_COL]), Integer.parseInt(properties[MINER_ROW])),
                     Integer.parseInt(properties[MINER_RATE]),
                     Integer.parseInt(properties[MINER_LIMIT]),
                     Integer.parseInt(properties[MINER_ANIMATION_RATE]), images.get(MINER_KEY));
@@ -172,7 +173,7 @@ public class SaveLoad {
     private Vein createVein(String[] properties, Map<String, List<PImage>> images) {
         if (properties.length == VEIN_NUM_PROPERTIES) {
             Vein v = new Vein(properties[VEIN_NAME],
-                    new Point(Integer.parseInt(properties[VEIN_ROW]), Integer.parseInt(properties[VEIN_COL])),
+                    new Point(Integer.parseInt(properties[VEIN_COL]), Integer.parseInt(properties[VEIN_ROW])),
                     Integer.parseInt(properties[VEIN_RATE]),
                     Integer.parseInt(properties[VEIN_REACH]),
                     images.get(VEIN_KEY));
@@ -184,7 +185,7 @@ public class SaveLoad {
     private Ore createOre(String[] properties, Map<String, List<PImage>> images) {
         if (properties.length == ORE_NUM_PROPERTIES) {
             Ore o = new Ore(properties[ORE_NAME],
-                    new Point(Integer.parseInt(properties[ORE_ROW]), Integer.parseInt(properties[ORE_COL])),
+                    new Point(Integer.parseInt(properties[ORE_COL]), Integer.parseInt(properties[ORE_ROW])),
                     Integer.parseInt(properties[ORE_RATE]),
                     images.get(ORE_KEY));
             return o;
@@ -196,7 +197,7 @@ public class SaveLoad {
         if (properties.length == SMITH_NUM_PROPERTIES)
         {
             Blacksmith b = new Blacksmith(properties[SMITH_NAME],
-                    new Point(Integer.parseInt(properties[SMITH_ROW]),Integer.parseInt(properties[SMITH_COL])),
+                    new Point(Integer.parseInt(properties[SMITH_COL]),Integer.parseInt(properties[SMITH_ROW])),
                     Integer.parseInt(properties[SMITH_RATE]),
                     Integer.parseInt(properties[SMITH_LIMIT]),
                     images.get(SMITH_KEY));
@@ -209,13 +210,15 @@ public class SaveLoad {
         if (properties.length == OBSTACLE_NUM_PROPERTIES)
         {
             Obstacle o = new Obstacle(properties[OBSTACLE_NAME],
-                    new Point(Integer.parseInt(properties[OBSTACLE_ROW]),
-                            Integer.parseInt(properties[OBSTACLE_COL])),
+                    new Point(Integer.parseInt(properties[OBSTACLE_COL]),
+                            Integer.parseInt(properties[OBSTACLE_ROW])),
                     images.get(OBSTACLE_KEY));
             return o;
         }
         return null;
     }
+
+
 
 /*    private void scheduleEntity(WorldModel world, Entity e, Map<String, List<PImage>> images)
     {

@@ -34,10 +34,10 @@ public class Main extends PApplet {
         File worldFile = new File(classLoader.getResource(WORLD_FILE).getFile());
         ImageStore imageStore = new ImageStore(this);
         imageMap = imageStore.loadImages(imageFile);
-        numCols = SCREEN_WIDTH / (TILE_WIDTH * WORLD_WIDTH_SCALE);
-        numRows = SCREEN_HEIGHT / (TILE_HEIGHT * WORLD_HEIGHT_SCALE);
+        numRows = (SCREEN_WIDTH / TILE_WIDTH) * WORLD_WIDTH_SCALE;
+        numCols = (SCREEN_HEIGHT / TILE_HEIGHT) * WORLD_HEIGHT_SCALE;
         defualtBackground = createDefaultBackground(imageMap.get(imageStore.getDEFAULT_IMAGE_NAME()));
-        WorldModel world = new WorldModel(numRows, numCols, defualtBackground);
+        WorldModel world = new WorldModel(numCols, numRows, defualtBackground);
         view = new WorldView(this, numCols, numRows, world, TILE_WIDTH, TILE_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         loadWorld(world, imageMap, worldFile);
@@ -51,7 +51,7 @@ public class Main extends PApplet {
 
     @Override
     public void draw() {
-
+        background(0);
         view.updateView();
     }
 
@@ -70,6 +70,35 @@ public class Main extends PApplet {
 
     @Override
     public void keyPressed() {
+            switch (key)
+            {
+                case 'w':
+                {
+                    view.shiftView(0,-1);
+                    break;
+                }
+                case 's':
+                {
+                    view.shiftView(0,1);
+                    break;
+                }
+                case 'a':
+                {
+                    view.shiftView(-1,0);
+                    break;
+                }
+                case 'd':
+                {
+                    view.shiftView(1,0);
+                    break;
+                }
+                case 'x':
+                {
+                    view.updateView();
+                    break;
+                }
+
+            }
 
     }
 

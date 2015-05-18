@@ -31,12 +31,17 @@ public class WorldView
         drawEntities();
     }
 
+    private Point viewportToWorld(Point pt)
+    {
+        return new Point(pt.getX() + drawX, pt.getY() + drawY);
+    }
+
     private void drawEntities()
     {
-        for (int i = drawY; i < 16; i++) {
-            for (int j = drawX; j < 16; j++)
+        for (int i = 0; i < drawHeight; i++) {
+            for (int j = 0; j < drawWidth; j++)
             {
-            Entity next = world.getTileOccupant(new Point(j,i));
+            Entity next = world.getTileOccupant(viewportToWorld(new Point(j,i)));
                 if (next != null)
                 {
                     parent.image(next.getImage(), j * tileWidth, i * tileHeight);
@@ -48,10 +53,10 @@ public class WorldView
 
     private void drawBackground()
     {
-        for (int i = drawY; i < drawHeight; i++) {
-            for (int j = drawX; j < drawWidth; j++)
+        for (int i = 0; i < drawHeight; i++) {
+            for (int j = 0; j < drawWidth; j++)
             {
-                Entity next = world.getBackground(new Point(j, i));
+                Entity next = world.getBackground(viewportToWorld(new Point(j,i)));
                 if (next != null)
                 {
                     parent.image(next.getImage(), j * tileWidth, i * tileHeight);
@@ -63,23 +68,13 @@ public class WorldView
 
     public void shiftView(int deltaX, int deltaY)
     {
-        if (deltaX != 0)
-        {
-            if (drawX + deltaX < numRows && drawX + deltaX >= 0)
-            {
-                drawX += deltaX;
-            }
+        drawX = clamp(drawX+deltaX, 0, numCols-drawWidth);
+        drawY = clamp(drawY+deltaY, 0, numRows-drawHeight);
+    }
 
-        }
-
-        if (deltaY != 0)
-        {
-            if (drawY + deltaY < numCols && drawY + deltaY >= 0)
-            {
-                drawY += deltaY;
-            }
-
-        }
+    private int clamp(int i1, int i2, int i3)
+    {
+        return Math.min(i3, Math.max(i1,i2));
     }
 
 

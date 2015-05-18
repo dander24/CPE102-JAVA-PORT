@@ -8,7 +8,7 @@ import java.util.*;
 public class ImageStore {
     PApplet parent;
     private  final String DEFAULT_IMAGE_NAME = "background_default";
-    //default color??
+    private final int COLOR_MASK = 0xffffff;
 
     private Scanner fin;
     private Map<String, List<PImage>> images;
@@ -61,7 +61,16 @@ public class ImageStore {
         if (line.length >= 2) //line is not properly formatted otherwise, do nothing
         {
             String key = line[0];
-            PImage nImage = parent.loadImage(line[1]);
+            PImage nImage;
+            if(line.length == 6) {
+                 nImage = setAlpha(parent.loadImage(line[1]), parent.color(Integer.parseInt(line[2])
+                        , Integer.parseInt(line[3]), Integer.parseInt(line[4])), Integer.parseInt(line[5]));
+            }
+                else
+            {
+                 nImage = parent.loadImage(line[1]);
+
+            }
 
             if(images.get(key) != null) //check to see if there is already an image list to use
             {
@@ -82,6 +91,23 @@ public class ImageStore {
     public String getDEFAULT_IMAGE_NAME()
     {
         return DEFAULT_IMAGE_NAME;
+    }
+
+    private PImage setAlpha(PImage image, int maskColor, int alpha)
+    {
+        int alphaValue = alpha << 24;
+        int nonAlpha = maskColor & COLOR_MASK;
+        image.format = PApplet.ARGB;
+        image.loadPixels();
+        for (int i = 0; i < image.pixels.length; i++)
+        {
+            if ((image.pixels[i] & COLOR_MASK) == nonAlpha)
+            {
+                image.pixels[i] = alphaValue | nonAlpha;
+            }
+        }
+        image.updatePixels();
+        return image;
     }
 
 }
