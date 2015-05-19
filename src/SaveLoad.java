@@ -1,12 +1,10 @@
+import processing.core.PImage;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import processing.core.*;
 
 public class SaveLoad {
     private final int PROPERTY_KEY = 0, COLOR_MASK = 0xffffff;
@@ -130,7 +128,7 @@ public class SaveLoad {
         if (newEntity != null) {
             world.addEntity(newEntity);
             if (run) {
-                scheduleEntity(world,newEntity,images);
+                scheduleEntity(world, newEntity, images);
             }
         }
     }
@@ -160,7 +158,7 @@ public class SaveLoad {
 
     private Miner createMiner(String[] properties, Map<String, List<PImage>> images) {
         if (properties.length == MINER_NUM_PROPERTIES) {
-            Miner m = new Miner(properties[MINER_NAME],
+            Miner m = new MinerNotFull(properties[MINER_NAME],
                     new Point(Integer.parseInt(properties[MINER_COL]), Integer.parseInt(properties[MINER_ROW])),
                     Integer.parseInt(properties[MINER_RATE]),
                     Integer.parseInt(properties[MINER_LIMIT]),
@@ -194,10 +192,9 @@ public class SaveLoad {
     }
 
     private Blacksmith createSmith(String[] properties, Map<String, List<PImage>> images) {
-        if (properties.length == SMITH_NUM_PROPERTIES)
-        {
+        if (properties.length == SMITH_NUM_PROPERTIES) {
             Blacksmith b = new Blacksmith(properties[SMITH_NAME],
-                    new Point(Integer.parseInt(properties[SMITH_COL]),Integer.parseInt(properties[SMITH_ROW])),
+                    new Point(Integer.parseInt(properties[SMITH_COL]), Integer.parseInt(properties[SMITH_ROW])),
                     Integer.parseInt(properties[SMITH_RATE]),
                     Integer.parseInt(properties[SMITH_LIMIT]),
                     images.get(SMITH_KEY));
@@ -207,8 +204,7 @@ public class SaveLoad {
     }
 
     private Obstacle createObstacle(String[] properties, Map<String, List<PImage>> images) {
-        if (properties.length == OBSTACLE_NUM_PROPERTIES)
-        {
+        if (properties.length == OBSTACLE_NUM_PROPERTIES) {
             Obstacle o = new Obstacle(properties[OBSTACLE_NAME],
                     new Point(Integer.parseInt(properties[OBSTACLE_COL]),
                             Integer.parseInt(properties[OBSTACLE_ROW])),
@@ -219,20 +215,15 @@ public class SaveLoad {
     }
 
 
-
-   private void scheduleEntity(WorldModel world, Entity e, Map<String, List<PImage>> images)
-    {
-        if (e instanceof MinerNotFull)
-        {
-            world.scheduleMiner((MinerNotFull)e, images);
+    private void scheduleEntity(WorldModel world, Entity e, Map<String, List<PImage>> images) {
+        if (e instanceof MinerNotFull) {
+            world.scheduleMiner((MinerNotFull) e, images);
         }
-        if (e instanceof Vein)
-        {
-            world.scheduleVein((Vein)e,images);
+        if (e instanceof Vein) {
+            world.scheduleVein((Vein) e, images);
         }
-        if (e instanceof Ore)
-        {
-            world.scheduleOre((Ore)e, images);
+        if (e instanceof Ore) {
+            world.scheduleOre((Ore) e, images);
         }
     }
 }

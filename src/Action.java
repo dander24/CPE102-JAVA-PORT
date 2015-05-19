@@ -1,5 +1,4 @@
 @FunctionalInterface
-public interface Action
-{
-    public void run();
+public interface Action {
+    void run();
 }

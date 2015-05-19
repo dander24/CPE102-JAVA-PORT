@@ -1,12 +1,13 @@
 import javafx.util.Pair;
 import processing.core.PImage;
 
-import java.lang.reflect.Type;
-import java.sql.Blob;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class WorldModel {
-    private final int BLOB_RATE_SCALE = 4,
+    private final int BLOB_RATE_SCALE = 10, //GOTTAGOFAST
             BLOB_ANIMATION_RATE_SCALE = 50,
             BLOB_ANIMATION_MIN = 1,
             BLOB_ANIMATION_MAX = 3,
@@ -74,11 +75,11 @@ public class WorldModel {
                 (pt1.getY() - pt2.getY()) * (pt1.getY() - pt2.getY()));
     }
 
-    public Entity findNearest(Point pt, Class<?> checkClass) {
+    public Entity findNearest(Point pt, Class<?> cls) {
         ArrayList<Pair<Entity, Double>> ofType = new ArrayList<>();
 
         for (Entity e : entities) {
-            if (e.getClass() == checkClass) {
+            if (cls.isInstance(e)) {
                 ofType.add(new Pair<>(e, distanceSquared(pt, ((NonStatic) e).getPosition())));
             }
         }
@@ -91,10 +92,12 @@ public class WorldModel {
         if (withinBounds(pt)) {
             Entity oldEntity = occupancy.getCell(pt);
             if (oldEntity != null) {
-                clearPendingActions((Actor)oldEntity);
+                clearPendingActions((Actor) oldEntity);
             }
             occupancy.setCell(pt, entity);
             entities.add(entity);
+
+
         }
     }
 
@@ -174,11 +177,11 @@ public class WorldModel {
         int horiz = sign(DestinationPt.getX() - EntityPt.getX());
         Point newPt = new Point(EntityPt.getX() + horiz, EntityPt.getY());
 
-        if (horiz == 0 | isOccupied(newPt)) {
+        if (horiz == 0 || isOccupied(newPt)) {
             int vert = sign(DestinationPt.getY() - EntityPt.getY());
             newPt = new Point(EntityPt.getX(), EntityPt.getY() + vert);
 
-            if (vert == 0 | isOccupied(newPt)) {
+            if (vert == 0 || isOccupied(newPt)) {
                 newPt = new Point(EntityPt.getX(), EntityPt.getY());
             }
 
@@ -190,11 +193,11 @@ public class WorldModel {
         int horiz = sign(DestinationPt.getX() - EntityPt.getX());
         Point newPt = new Point(EntityPt.getX() + horiz, EntityPt.getY());
 
-        if (horiz == 0 | !(getTileOccupant(newPt) instanceof Ore)) {
+        if (horiz == 0 || isOccupied(newPt) && !(getTileOccupant(newPt) instanceof Ore)) {
             int vert = sign(DestinationPt.getY() - EntityPt.getY());
             newPt = new Point(EntityPt.getX(), EntityPt.getY() + vert);
 
-            if (vert == 0 | !(getTileOccupant(newPt) instanceof Ore)) {
+            if (vert == 0 || isOccupied(newPt) && !(getTileOccupant(newPt) instanceof Ore)) {
                 newPt = new Point(EntityPt.getX(), EntityPt.getY());
             }
 
@@ -211,7 +214,7 @@ public class WorldModel {
 
         if (adjacent(entityPoint, orePoint)) {
             ((Miner) entity).setResourceCount(1 + ((Miner) entity).getResourceCount());
-            worldRemoveEntity(ore);
+            removeEntity((Actor) ore);
             return new Pair<>(new Point[]{orePoint}, true);
         } else {
             Point newPt = nextPosition(entityPoint, orePoint);
@@ -245,14 +248,14 @@ public class WorldModel {
         Point veinPoint = ((Vein) vein).getPosition();
 
         if (adjacent(entityPoint, veinPoint)) {
-            worldRemoveEntity(vein);
+            removeEntity((Actor) vein);
             return new Pair<>(new Point[]{veinPoint}, true);
         } else {
             Point newPt = blobNextPosition(entityPoint, veinPoint);
             Entity oldEntity = getTileOccupant(newPt);
 
-            if (oldEntity.getClass() == Ore.class) {
-                removeEntity((Actor)oldEntity);
+            if (oldEntity instanceof Ore) {
+                removeEntity((Actor) oldEntity);
             }
             return new Pair<>(moveEntity(entity, newPt), false);
         }
@@ -274,8 +277,7 @@ public class WorldModel {
     }
 
     private void removeEntity(Actor entity) {
-        for(Action action : entity.getPendingActions())
-        {
+        for (Action action : entity.getPendingActions()) {
             unscheduleAction(action);
         }
         entity.clearPendingActions();
@@ -308,7 +310,7 @@ public class WorldModel {
         Random rand = new Random();
         Vein v = new Vein("vein" + name, pt, rand.nextInt(VEIN_RATE_MAX - VEIN_RATE_MIN) + VEIN_RATE_MIN, 1,
                 imageStore.get("vein"));
-        scheduleVein(v,imageStore);
+        scheduleVein(v, imageStore);
         return v;
     }
 
@@ -337,10 +339,9 @@ public class WorldModel {
     }
 
 
-    private void scheduleAnimation(Animated e, int repeatCount)
-    {
+    private void scheduleAnimation(Animated e, int repeatCount) {
         scheduleAction(e,
-                createAnimationAction(e,repeatCount),
+                createAnimationAction(e, repeatCount),
                 e.getAnimationRate());
     }
 
@@ -352,7 +353,7 @@ public class WorldModel {
             e.nextImage();
 
             if (repeatCount != 1) {
-                scheduleAction(e, createAnimationAction(e, Math.max(repeatCount - 1, 0)),
+                scheduleAction(e, createAnimationAction(e, Math.max(0, repeatCount - 1)),
                         System.currentTimeMillis() + e.getAnimationRate());
             }
 
@@ -385,24 +386,23 @@ public class WorldModel {
                             e.getName(), e.getPosition(),
                             e.getRate(), e.getResourceLimit(),
                             e.getAnimationRate(), e.getImages());
-                    if (newMiner != e)
-                    {
+                    if (newMiner != e) {
                         clearPendingActions(e);
                         worldRemoveEntityAt(e.getPosition());
                         addEntity(newMiner);
-                        scheduleAnimation(newMiner,0);
+                        scheduleAnimation(newMiner, 0);
                     }
 
                 }
 
-                scheduleAction(newMiner,
-                        createMinerAction(newMiner, imageStore),
-                        System.currentTimeMillis() + newMiner.getRate());
             }
+            scheduleAction(newMiner,
+                    createMinerAction(newMiner, imageStore),
+                    System.currentTimeMillis() + newMiner.getRate());
         };
 
-            return newAction[0];
-        }
+        return newAction[0];
+    }
 
     private Action createMinerFullAction(Miner e, Map<String, List<PImage>> imageStore) {
         Action[] newAction = {null};
@@ -420,21 +420,22 @@ public class WorldModel {
                         e.getRate(), e.getResourceLimit(),
                         e.getAnimationRate(), e.getImages());
 
-                if (newMiner != e)
-                {
+                if (newMiner != e) {
                     clearPendingActions(e);
                     worldRemoveEntityAt(e.getPosition());
                     addEntity(newMiner);
-                    scheduleAnimation(newMiner,0);
+                    scheduleAnimation(newMiner, 0);
                 }
             }
-
             scheduleAction(newMiner,
                     createMinerAction(newMiner, imageStore),
                     System.currentTimeMillis() + newMiner.getRate());
+
         };
-    return newAction[0];
-}
+
+
+        return newAction[0];
+    }
 
     private Action createOreBlobAction(OreBlob e, Map<String, List<PImage>> imageStore) {
         Action[] newAction = {null};
@@ -493,10 +494,9 @@ public class WorldModel {
         }
     }
 
-    private Action createEntityDeathAction(Actor e)
-    {
+    private Action createEntityDeathAction(Actor e) {
         Action[] newAction = {null};
-        newAction[0] = () ->{
+        newAction[0] = () -> {
             e.removePendingAction(newAction[0]);
             removeEntity(e);
         };
@@ -504,61 +504,53 @@ public class WorldModel {
         return newAction[0];
     }
 
-    private Action createOreTransformAction(Actor e, Map<String, List<PImage>> imageStore)
-    {
+    private Action createOreTransformAction(Actor e, Map<String, List<PImage>> imageStore) {
         Action[] newAction = {null};
-        newAction[0] = () ->{
+        newAction[0] = () -> {
             e.removePendingAction(newAction[0]);
             OreBlob b = createBlob(e.getName() + " -- blob",
-                    e.getPosition(),e.getRate()/BLOB_RATE_SCALE,
+                    e.getPosition(), e.getRate() / BLOB_RATE_SCALE,
                     imageStore);
 
-            worldRemoveEntity(e);
+            removeEntity(e);
             addEntity(b);
         };
 
         return newAction[0];
     }
 
-    private void scheduleBlob(OreBlob blob, Map<String, List<PImage>> imageStore)
-    {
+    private void scheduleBlob(OreBlob blob, Map<String, List<PImage>> imageStore) {
         scheduleAction(blob,
                 createOreBlobAction(blob, imageStore),
                 System.currentTimeMillis() + blob.getRate());
-        scheduleAnimation(blob, blob.getAnimationRate());
+        scheduleAnimation(blob, 0);
     }
 
-    public void scheduleMiner(Miner miner, Map<String, List<PImage>> imageStore)
-    {
+    public void scheduleMiner(Miner miner, Map<String, List<PImage>> imageStore) {
         scheduleAction(miner,
                 createMinerAction(miner, imageStore),
                 System.currentTimeMillis() + miner.getRate());
-        scheduleAnimation(miner, miner.getAnimationRate());
+        scheduleAnimation(miner, 0);
     }
 
-    public void scheduleOre(Ore ore, Map<String, List<PImage>> imageStore)
-    {
+    public void scheduleOre(Ore ore, Map<String, List<PImage>> imageStore) {
         scheduleAction(ore,
                 createOreTransformAction(ore, imageStore),
                 System.currentTimeMillis() + ore.getRate());
     }
 
-    public void scheduleVein(Vein vein, Map<String, List<PImage>> imageStore)
-    {
+    public void scheduleVein(Vein vein, Map<String, List<PImage>> imageStore) {
         scheduleAction(vein,
                 createVeinAction(vein, imageStore),
                 System.currentTimeMillis() + vein.getRate());
     }
 
-    public void scheduleQuake(Quake quake)
-    {
+    public void scheduleQuake(Quake quake) {
         scheduleAnimation(quake, QUAKE_STEPS);
         scheduleAction(quake,
                 createEntityDeathAction(quake),
                 System.currentTimeMillis() + QUAKE_DURATION);
     }
-
-
 
 
 }

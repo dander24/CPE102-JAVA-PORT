@@ -45,13 +45,10 @@ public class Main extends PApplet {
         size(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 
-
-
     }
 
     @Override
     public void draw() {
-        view.updateWorld();
         view.updateView();
     }
 
@@ -70,35 +67,29 @@ public class Main extends PApplet {
 
     @Override
     public void keyPressed() {
-            switch (key)
-            {
-                case 'w':
-                {
-                    view.shiftView(0,-1);
-                    break;
-                }
-                case 's':
-                {
-                    view.shiftView(0,1);
-                    break;
-                }
-                case 'a':
-                {
-                    view.shiftView(-1,0);
-                    break;
-                }
-                case 'd':
-                {
-                    view.shiftView(1,0);
-                    break;
-                }
-                case 'x':
-                {
-                    view.updateView();
-                    break;
-                }
-
+        switch (key) {
+            case 'w': {
+                view.shiftView(0, -1);
+                break;
             }
+            case 's': {
+                view.shiftView(0, 1);
+                break;
+            }
+            case 'a': {
+                view.shiftView(-1, 0);
+                break;
+            }
+            case 'd': {
+                view.shiftView(1, 0);
+                break;
+            }
+            case 'x': {
+                view.updateView();
+                break;
+            }
+
+        }
 
     }
 

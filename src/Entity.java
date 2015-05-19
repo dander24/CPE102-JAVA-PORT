@@ -1,41 +1,36 @@
 import processing.core.PImage;
+
 import java.util.List;
 
-public class Entity
-{
+public class Entity {
     private String name;
     private List<PImage> images;
     private int currentImg;
 
-    public Entity(String name, List<PImage> pImages)
-    {
+    public Entity(String name, List<PImage> pImages) {
         this.name = name;
         images = pImages;
         currentImg = 0;
 
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public List<PImage> getImages()
-    {
+    public List<PImage> getImages() {
         return images;
     }
 
-    public PImage getImage()
-    {
+    public PImage getImage() {
         return images.get(currentImg);
     }
 
-    public void nextImage()
-    {
+    public void nextImage() {
         currentImg = (currentImg + 1) % images.size();
     }
 
-    public String getSelfString()
-    {
+    public String getSelfString() {
         return "Unknown";
     }
 }

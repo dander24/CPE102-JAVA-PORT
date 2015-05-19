@@ -1,15 +1,12 @@
 import processing.core.PApplet;
-import processing.core.PImage;
 
-public class WorldView
-{
+public class WorldView {
     private int viewRows, viewCols, tileWidth, tileHeight, numRows, numCols, drawWidth, drawHeight, drawX, drawY;
     private WorldModel world;
     private PApplet parent;
 
     public WorldView(PApplet parentApp, int viewCol, int viewRow, WorldModel worldMod, int tileWid, int tileHei,
-                     int screenWidth, int screenHeight)
-    {
+                     int screenWidth, int screenHeight) {
         world = worldMod;
         tileWidth = tileWid;
         tileHeight = tileHei;
@@ -25,31 +22,22 @@ public class WorldView
 
     }
 
-    public  void updateView()
-    {
+    public void updateView() {
         drawBackground();
         drawEntities();
         world.updateOnTime(System.currentTimeMillis());
     }
 
-    public void updateWorld()
-    {
-        world.updateOnTime(System.currentTimeMillis());
-    }
 
-    private Point viewportToWorld(Point pt)
-    {
+    private Point viewportToWorld(Point pt) {
         return new Point(pt.getX() + drawX, pt.getY() + drawY);
     }
 
-    private void drawEntities()
-    {
+    private void drawEntities() {
         for (int i = 0; i < drawHeight; i++) {
-            for (int j = 0; j < drawWidth; j++)
-            {
-            Entity next = world.getTileOccupant(viewportToWorld(new Point(j,i)));
-                if (next != null)
-                {
+            for (int j = 0; j < drawWidth; j++) {
+                Entity next = world.getTileOccupant(viewportToWorld(new Point(j, i)));
+                if (next != null) {
                     parent.image(next.getImage(), j * tileWidth, i * tileHeight);
                 }
             }
@@ -57,14 +45,11 @@ public class WorldView
         }
     }
 
-    private void drawBackground()
-    {
+    private void drawBackground() {
         for (int i = 0; i < drawHeight; i++) {
-            for (int j = 0; j < drawWidth; j++)
-            {
-                Entity next = world.getBackground(viewportToWorld(new Point(j,i)));
-                if (next != null)
-                {
+            for (int j = 0; j < drawWidth; j++) {
+                Entity next = world.getBackground(viewportToWorld(new Point(j, i)));
+                if (next != null) {
                     parent.image(next.getImage(), j * tileWidth, i * tileHeight);
                 }
             }
@@ -72,15 +57,13 @@ public class WorldView
         }
     }
 
-    public void shiftView(int deltaX, int deltaY)
-    {
-        drawX = clamp(drawX+deltaX, 0, numCols-drawWidth);
-        drawY = clamp(drawY+deltaY, 0, numRows-drawHeight);
+    public void shiftView(int deltaX, int deltaY) {
+        drawX = clamp(drawX + deltaX, 0, numCols - drawWidth);
+        drawY = clamp(drawY + deltaY, 0, numRows - drawHeight);
     }
 
-    private int clamp(int i1, int i2, int i3)
-    {
-        return Math.min(i3, Math.max(i1,i2));
+    private int clamp(int i1, int i2, int i3) {
+        return Math.min(i3, Math.max(i1, i2));
     }
 
 
