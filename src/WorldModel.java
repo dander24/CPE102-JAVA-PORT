@@ -173,36 +173,40 @@ public class WorldModel {
 
     //end code ported from actions
 
-    public Point nextPosition(Point EntityPt, Point DestinationPt) {
-        int horiz = sign(DestinationPt.getX() - EntityPt.getX());
-        Point newPt = new Point(EntityPt.getX() + horiz, EntityPt.getY());
-
-        if (horiz == 0 || isOccupied(newPt)) {
-            int vert = sign(DestinationPt.getY() - EntityPt.getY());
-            newPt = new Point(EntityPt.getX(), EntityPt.getY() + vert);
-
-            if (vert == 0 || isOccupied(newPt)) {
-                newPt = new Point(EntityPt.getX(), EntityPt.getY());
+    public Point nextPosition(Point EntityPt, Point DestinationPt, Animated mover) {
+        if (mover.getMovesListSize() != 0 && !isOccupied(mover.getNextMove())) {
+            return mover.makeNextMove();
+        } else {
+            int[][] cleanArray = new int[numRows][numCols];
+            for (int i = 0; i < numRows; i++) {
+                for (int j = 0; j < numCols; j++) {
+                    cleanArray[i][j] = 0;
+                }
             }
-
+            mover.setPathing(cleanArray);
+            mover.cleanMovesList();
+            dfs(EntityPt,DestinationPt,mover);
+            return mover.makeNextMove();
         }
-        return newPt;
+
+
     }
 
-    public Point blobNextPosition(Point EntityPt, Point DestinationPt) {
-        int horiz = sign(DestinationPt.getX() - EntityPt.getX());
-        Point newPt = new Point(EntityPt.getX() + horiz, EntityPt.getY());
-
-        if (horiz == 0 || isOccupied(newPt) && !(getTileOccupant(newPt) instanceof Ore)) {
-            int vert = sign(DestinationPt.getY() - EntityPt.getY());
-            newPt = new Point(EntityPt.getX(), EntityPt.getY() + vert);
-
-            if (vert == 0 || isOccupied(newPt) && !(getTileOccupant(newPt) instanceof Ore)) {
-                newPt = new Point(EntityPt.getX(), EntityPt.getY());
+    public Point blobNextPosition(Point EntityPt, Point DestinationPt, Animated mover) {
+        if (mover.getMovesListSize() != 0 && !isOccupied(mover.getNextMove())) {
+            return mover.makeNextMove();
+        } else {
+            int[][] cleanArray = new int[numRows][numCols];
+            for (int i = 0; i < numRows; i++) {
+                for (int j = 0; j < numCols; j++) {
+                    cleanArray[i][j] = 0;
+                }
             }
-
+            mover.setPathing(cleanArray);
+            mover.cleanMovesList();
+            dfsBlob(EntityPt, DestinationPt, mover);
+            return mover.makeNextMove();
         }
-        return newPt;
     }
 
     public Pair<Point[], Boolean> minerToOre(Entity entity, Entity ore) {
@@ -217,7 +221,7 @@ public class WorldModel {
             removeEntity((Actor) ore);
             return new Pair<>(new Point[]{orePoint}, true);
         } else {
-            Point newPt = nextPosition(entityPoint, orePoint);
+            Point newPt = nextPosition(entityPoint, orePoint, (Animated)entity);
             return new Pair<>(moveEntity(entity, newPt), false);
         }
     }
@@ -235,7 +239,7 @@ public class WorldModel {
             ((Miner) entity).setResourceCount(0);
             return new Pair<>(new Point[]{smithPoint}, true);
         } else {
-            Point newPt = nextPosition(entityPoint, smithPoint);
+            Point newPt = nextPosition(entityPoint, smithPoint, (Animated)entity);
             return new Pair<>(moveEntity(entity, newPt), false);
         }
     }
@@ -251,7 +255,7 @@ public class WorldModel {
             removeEntity((Actor) vein);
             return new Pair<>(new Point[]{veinPoint}, true);
         } else {
-            Point newPt = blobNextPosition(entityPoint, veinPoint);
+            Point newPt = blobNextPosition(entityPoint, veinPoint, (Animated)entity);
             Entity oldEntity = getTileOccupant(newPt);
 
             if (oldEntity instanceof Ore) {
@@ -552,7 +556,86 @@ public class WorldModel {
                 System.currentTimeMillis() + QUAKE_DURATION);
     }
 
+    public boolean dfs(Point current, Point Goal, Animated mover) {
+        if (!withinBounds(current)) {
+            return false;
+        }
 
+        if (current.equals(Goal)) {
+            return true;
+        }
+
+        if ( (isOccupied(current) && getTileOccupant(current) != mover ) || mover.getPathingValue(current) == 1) {
+            return false;
+        }
+
+        mover.setPathingValue(current, 1);
+
+        boolean movable = dfs(new Point(current.getX() + 1, current.getY()), Goal, mover) ||
+                dfs(new Point(current.getX(), current.getY() + 1), Goal, mover) ||
+                dfs(new Point(current.getX() - 1, current.getY()), Goal, mover) ||
+                dfs(new Point(current.getX(), current.getY() - 1), Goal, mover);
+
+        if (movable) {
+            mover.setPathingValue(current, 2);
+            mover.addToMoves(current);
+        }
+
+        if(!movable)
+        {
+            mover.addToMoves(mover.getPosition());
+        }
+
+        return movable;
+    }
+
+    public boolean dfsBlob(Point current, Point Goal, Animated mover) {
+        if (!withinBounds(current)) {
+            return false;
+        }
+
+        if (current.equals(Goal)) {
+            return true;
+        }
+
+        if ( (isOccupied(current) && getTileOccupant(current) != mover && !(getTileOccupant(current) instanceof Ore))
+                || mover.getPathingValue(current) == 1) {
+            return false;
+        }
+
+        mover.setPathingValue(current, 1);
+
+        boolean movable = dfsBlob(new Point(current.getX() + 1, current.getY()), Goal, mover) ||
+                dfsBlob(new Point(current.getX(), current.getY() + 1), Goal, mover) ||
+                dfsBlob(new Point(current.getX() - 1, current.getY()), Goal, mover) ||
+                dfsBlob(new Point(current.getX(), current.getY() - 1), Goal, mover);
+
+        if (movable) {
+            mover.setPathingValue(current, 2);
+            mover.addToMoves(current);
+        }
+
+        if(!movable)
+        {
+            mover.addToMoves(mover.getPosition());
+        }
+
+        return movable;
+    }
 }
 
 
+/*
+        int horiz = sign(DestinationPt.getX() - EntityPt.getX());
+        Point newPt = new Point(EntityPt.getX() + horiz, EntityPt.getY());
+
+        if (horiz == 0 || isOccupied(newPt)) {
+            int vert = sign(DestinationPt.getY() - EntityPt.getY());
+            newPt = new Point(EntityPt.getX(), EntityPt.getY() + vert);
+
+            if (vert == 0 || isOccupied(newPt)) {
+                newPt = new Point(EntityPt.getX(), EntityPt.getY());
+            }
+
+        }
+        return newPt;*/

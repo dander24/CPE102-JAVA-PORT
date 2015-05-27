@@ -31,3 +31,43 @@ interface List<T>
 List<String>
 
 class Pair<T,R>
+
+
+Linked data structure
+
+node
+[ data and link to next node]
+
+array list is better for random acess
+
+linked list better for insert and remove
+
+public LList<T>
+{
+	private LLNode head;
+	
+	public LList()
+	{
+		head = null;
+	}
+	
+	public int size()
+	{
+		int i = 0;
+		LLNode cur = head;
+		while (head != null){
+			i++;
+			cur = cur.next();}
+			
+		return i;
+	}
+			
+}
+
+public class LLNode<T>
+{
+	public T value;
+	public LLNode<T> next;
+}
+
+			
