@@ -6,7 +6,7 @@ import java.util.List;
 public class Animated extends Actor {
 
     private int animationRate;
-    private int[][] pathing;
+    private int[][] pathing = null;
     private ArrayList<Point> nextMoves;
 
     public Animated(String name, Point position, List<PImage> pImages, int rate, int animationRate) {
@@ -31,7 +31,10 @@ public class Animated extends Actor {
 
     public int getPathingValue(Point point)
     {
-        return pathing[point.getY()][point.getX()];
+        if (pathing != null) {
+            return pathing[point.getY()][point.getX()];
+        }
+        return 0;
     }
 
     public void addToMoves(Point point)
